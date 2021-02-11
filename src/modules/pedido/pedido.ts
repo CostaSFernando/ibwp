@@ -63,4 +63,4 @@ export class Pedido {
   @Prop({ type: SchemaMongo.Types.ObjectId, ref: 'PedidoBase' })
   pedido: PedidoBase;
 }
-export const PedidoSchema = Schema;
+export const PedidoSchema = SchemaFactory.createForClass(Pedido);
