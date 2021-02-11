@@ -1,16 +1,16 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IDeals } from './deal.model';
+import axios from 'axios';
 
 @Injectable()
 export class DealService {
     constructor(
-        private httpService: HttpService
     ){}
 
     async getDeals(): Promise<IDeals> {
-        const res =  await this.httpService.get<IDeals>(
+        const res =  await axios.get<IDeals>(
             `https://api.pipedrive.com/v1/deals?status=won&start=0&api_token=${process.env.PIPEDRIVEKEY}`
-            ).toPromise();
+            );
 
         return res.data;
     }

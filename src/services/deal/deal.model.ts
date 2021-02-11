@@ -1,5 +1,6 @@
 
 export interface Datum {
+    id: number;
     stage_id: number;
     title: string;
     value: number;
@@ -21,6 +22,8 @@ export interface Datum {
     org_name: string;
     weighted_value: number;
     owner_name: string;
+    products_count: number;
+    
 }
 
 export interface Pagination {

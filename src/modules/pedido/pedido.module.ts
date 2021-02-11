@@ -1,10 +1,11 @@
 import { HttpModule, HttpService, Module } from '@nestjs/common';
+import { DealService } from 'src/services/deal/deal.service';
 import { PedidoService } from 'src/services/pedido/pedido.service';
 import { PedidoController } from './pedido.controller';
 
 @Module({
-  imports: [HttpModule],
+  imports: [],
   controllers: [PedidoController],
-  providers: [HttpService, PedidoService]
+  providers: [PedidoService, DealService]
 })
 export class PedidoModule {}

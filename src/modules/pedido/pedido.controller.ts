@@ -17,13 +17,16 @@ export class PedidoController {
         const deals = await this.dealService.getDeals();
 
         // Cadastrar propostas no Bling
-        return this.pedidoService.createPedidoWithDeal(deals).catch(
+        const retorno = await this.pedidoService.createPedidoWithDeal(deals).catch(
             error => {
                 // console.log(error);
-                console.log(error);
+                console.log(error.response.data.retorno);
 
             }
         );
+
+        console.log(retorno);
+        return retorno;
 
         // Salvar no mongoDB
     }
