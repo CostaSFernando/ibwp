@@ -75,8 +75,6 @@ export class PedidoService {
       });
 
       if (searchPedido) {
-        console.log(searchPedido);
-
         searchPedido.data.push(pedido);
         return await this.pedidoModel.updateOne(
           { _id: searchPedido._id },
