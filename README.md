@@ -71,3 +71,14 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## DOTENV
+
+Crie a pasta `bash .env ` na raiz do projeto e um arquivo ` dev.env` dentro da pasta para rodar em desenvolvimento
+
+Variaveis de ambiente:
+
+- BLINGKEY
+- PIPEDRIVEKEY
+- PORT { default = 3000}
+- URLMONGO
