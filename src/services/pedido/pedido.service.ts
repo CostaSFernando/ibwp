@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { IDeals } from '../deal/deal.model';
-import { IpostPedido } from './pedido.model';
 import { InjectModel } from '@nestjs/mongoose';
-//  import { map } from 'rxjs/operators';
 import * as convert from 'xml-js';
 import axios from 'axios';
 import * as qs from 'qs';
@@ -58,17 +56,18 @@ export class PedidoService {
         xml,
       });
 
-      //   const { data } = await axios.request({
-      //     method: 'post',
-      //     url: 'https://bling.com.br/Api/v2/pedido/json/',
-      //     data: payload,
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded',
-      //     },
-      //   });
-      //   if (data.retorno.erros) {
-      //     throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
-      //   }
+      const { data } = await axios.request({
+        method: 'post',
+        url: 'https://bling.com.br/Api/v2/pedido/json/',
+        data: payload,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+      if (data.retorno.erros) {
+        throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
+      }
+
       const dataWon = iDeal.won_time.split(' ')[0];
 
       const searchPedido = await this.pedidoModel.findOne({
