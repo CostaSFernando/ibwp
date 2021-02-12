@@ -8,7 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 @Module({
   imports: [
     MongooseModule.forFeature(
-      [{ name: Pedido.name, schema: Pedido }],
+      [{ name: Pedido.name, schema: PedidoSchema }],
       'pedido',
     ),
   ],
