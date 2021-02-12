@@ -95,7 +95,6 @@ export class PedidoService {
       return await newPedido.save();
     });
 
-    //@ts-ignore
     return Promise.allSettled(responses);
   }
 
