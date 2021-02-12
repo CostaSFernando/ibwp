@@ -68,7 +68,7 @@ export class PedidoService {
         throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
       }
 
-      const dataWon = iDeal.won_time.split(' ')[0];
+      const [dataWon] = iDeal.won_time.split(' ');
 
       const searchPedido = await this.pedidoModel.findOne({
         data_ganho: dataWon,
@@ -76,7 +76,7 @@ export class PedidoService {
 
       if (searchPedido) {
         searchPedido.data.push(pedido);
-        return await this.pedidoModel.updateOne(
+        return this.pedidoModel.updateOne(
           { _id: searchPedido._id },
           {
             $set: {
@@ -92,7 +92,7 @@ export class PedidoService {
         data: [pedido],
       });
 
-      return await newPedido.save();
+      return newPedido.save();
     });
 
     return Promise.allSettled(responses);
