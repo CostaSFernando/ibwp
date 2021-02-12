@@ -45,13 +45,12 @@ class Parcelas {
 
 @Schema()
 export class PedidoBase {
-  @Prop({ type: Cliente })
+  @Prop({ type: SchemaMongo.Types.ObjectId, ref: 'Cliente' })
   cliente: Cliente;
   @Prop()
   vendedor: string;
-  @Prop()
+  @Prop({ type: Date })
   data_prevista: Date;
-
   @Prop({ type: SchemaMongo.Types.ObjectId, ref: 'Itens' })
   itens: Itens;
   @Prop({ type: SchemaMongo.Types.ObjectId, ref: 'Parcelas' })
@@ -60,7 +59,7 @@ export class PedidoBase {
 
 @Schema()
 export class Pedido {
-  @Prop({ type: SchemaMongo.Types.ObjectId, ref: 'PedidoBase' })
+  @Prop({ type: PedidoBase })
   pedido: PedidoBase;
 }
 export const PedidoSchema = SchemaFactory.createForClass(Pedido);

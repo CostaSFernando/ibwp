@@ -8,7 +8,7 @@ import { PedidoModule } from './modules/pedido/pedido.module';
   imports: [
     PedidoModule,
     MongooseModule.forRoot(process.env.URLMONGO, {
-      connectionName: 'pedido',
+      connectionName: 'Pedido',
     }),
   ],
   controllers: [AppController],

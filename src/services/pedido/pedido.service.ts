@@ -68,6 +68,8 @@ export class PedidoService {
         throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
       }
       const newPedido = new this.pedidoModel(pedido);
+      console.log(newPedido);
+
       return await newPedido.save();
     });
 
