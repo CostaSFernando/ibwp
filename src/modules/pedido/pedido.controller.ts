@@ -12,19 +12,16 @@ export class PedidoController {
   @Post()
   async integrationBlingToPipedrive() {
     // Buscar propostas ganhas pipe drive
+
     const deals = await this.dealService.getDeals();
 
     // Cadastrar propostas no Bling
     const retorno = await this.pedidoService
       .createPedidoWithDeal(deals)
       .catch((error) => {
-        // console.log(error);
-        console.log(error.response.data.retorno);
+        console.error(error.response.data.retorno);
       });
-
     return retorno;
-
-    // Salvar no mongoDB
   }
 
   @Get()

@@ -4,14 +4,11 @@ import axios from 'axios';
 
 @Injectable()
 export class DealService {
-    constructor(
-    ){}
+  async getDeals(): Promise<IDeals> {
+    const res = await axios.get<IDeals>(
+      `https://api.pipedrive.com/v1/deals?status=won&start=0&api_token=${process.env.PIPEDRIVEKEY}`,
+    );
 
-    async getDeals(): Promise<IDeals> {
-        const res =  await axios.get<IDeals>(
-            `https://api.pipedrive.com/v1/deals?status=won&start=0&api_token=${process.env.PIPEDRIVEKEY}`
-            );
-
-        return res.data;
-    }
+    return res.data;
+  }
 }
