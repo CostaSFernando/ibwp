@@ -5,95 +5,99 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as convert from 'xml-js';
 import axios from 'axios';
 import * as qs from 'qs';
-import { Pedido, Agregation } from '../../modules/pedido/pedido';
 import {
-  Pedido as PedidoSchema,
+  Pedido,
+  Agregation,
   PedidoDocument,
 } from '../../modules/pedido/pedido';
 
 @Injectable()
 export class PedidoService {
   constructor(
-    @InjectModel(PedidoSchema.name)
+    @InjectModel(Pedido.name)
     private readonly pedidoModel: Model<PedidoDocument>,
   ) {}
-  async createPedidoWithDeal(deal: IDeals): Promise<any> {
-    const responses = deal.data.map(async (iDeal) => {
-      const pedido: Agregation = {
-        pedido: {
-          cliente: {
-            nome: iDeal.person_name,
-          },
-          vendedor: iDeal.owner_name,
-          data_prevista: new Date(iDeal.close_time),
-          itens: {
-            item: [
-              {
-                vlr_unit: '' + iDeal.products_count / iDeal.weighted_value,
-                qtde: '' + iDeal.products_count,
-                descricao: iDeal.title,
-                codigo: '' + iDeal.id,
-              },
-            ],
-          },
-          parcelas: {
-            parcela: [
-              {
-                dias: 1,
-                vlr: '' + iDeal.weighted_value,
-                data: iDeal.expected_close_date,
-              },
-            ],
-          },
-        },
-      };
-
-      let xml = this.createXml(pedido);
-
-      xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
-      const payload = qs.stringify({
-        apikey: process.env.BLINGKEY,
-        xml,
-      });
-
-      const { data } = await axios.request({
-        method: 'post',
-        url: 'https://bling.com.br/Api/v2/pedido/json/',
-        data: payload,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      if (data.retorno.erros) {
-        throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
-      }
-
-      const [dataWon] = iDeal.won_time.split(' ');
-
-      const searchPedido = await this.pedidoModel.findOne({
-        data_ganho: dataWon,
-      });
-
-      if (searchPedido) {
-        searchPedido.data.push(pedido);
-        return this.pedidoModel.updateOne(
-          { _id: searchPedido._id },
-          {
-            $set: {
-              data: searchPedido.data,
-              valor_total: searchPedido.valor_total + iDeal.weighted_value,
+  async createPedidoWithDeal(deal: IDeals) {
+    const responses = deal.data.map(
+      async (iDeal): Promise<PedidoDocument> => {
+        const pedido: Agregation = {
+          pedido: {
+            cliente: {
+              nome: iDeal.person_name,
+            },
+            vendedor: iDeal.owner_name,
+            data_prevista: new Date(iDeal.close_time),
+            itens: {
+              item: [
+                {
+                  vlr_unit: '' + iDeal.products_count / iDeal.weighted_value,
+                  qtde: '' + iDeal.products_count,
+                  descricao: iDeal.title,
+                  codigo: '' + iDeal.id,
+                },
+              ],
+            },
+            parcelas: {
+              parcela: [
+                {
+                  dias: 1,
+                  vlr: '' + iDeal.weighted_value,
+                  data: iDeal.expected_close_date,
+                },
+              ],
             },
           },
-        );
-      }
-      const newPedido = new this.pedidoModel({
-        data_ganho: dataWon,
-        valor_total: iDeal.weighted_value,
-        data: [pedido],
-      });
+        };
 
-      return newPedido.save();
-    });
+        let xml = this.createXml(pedido);
+
+        xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
+        const payload = qs.stringify({
+          apikey: process.env.BLINGKEY,
+          xml,
+        });
+
+        const { data } = await axios.request({
+          method: 'post',
+          url: 'https://bling.com.br/Api/v2/pedido/json/',
+          data: payload,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+        if (data.retorno.erros) {
+          throw new Error(
+            `O Pedido do ${iDeal.person_name} não foi cadastrado.`,
+          );
+        }
+
+        const [dataWon] = iDeal.won_time.split(' ');
+
+        const searchPedido = await this.pedidoModel.findOne({
+          data_ganho: dataWon,
+        });
+
+        if (searchPedido) {
+          searchPedido.data.push(pedido);
+          return this.pedidoModel.updateOne(
+            { _id: searchPedido._id },
+            {
+              $set: {
+                data: searchPedido.data,
+                valor_total: searchPedido.valor_total + iDeal.weighted_value,
+              },
+            },
+          );
+        }
+        const newPedido = new this.pedidoModel({
+          data_ganho: dataWon,
+          valor_total: iDeal.weighted_value,
+          data: [pedido],
+        });
+
+        return newPedido.save();
+      },
+    );
 
     return Promise.allSettled(responses);
   }

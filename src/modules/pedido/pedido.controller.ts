@@ -1,4 +1,9 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Post,
+} from '@nestjs/common';
 import { DealService } from 'src/services/deal/deal.service';
 import { PedidoService } from 'src/services/pedido/pedido.service';
 
@@ -11,17 +16,14 @@ export class PedidoController {
 
   @Post()
   async integrationBlingToPipedrive() {
-    // Buscar propostas ganhas pipe drive
-
     const deals = await this.dealService.getDeals();
 
-    // Cadastrar propostas no Bling
     const retorno = await this.pedidoService
       .createPedidoWithDeal(deals)
       .catch((error) => {
-        console.error(error.response.data.retorno);
+        throw new InternalServerErrorException(error);
       });
-    return retorno;
+    return retorno.filter((pedido) => pedido.status !== 'rejected');
   }
 
   @Get()
