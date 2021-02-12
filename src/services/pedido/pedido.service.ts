@@ -90,7 +90,7 @@ export class PedidoService {
       }
       const newPedido = new this.pedidoModel({
         data_ganho: dataWon,
-        valor_total: 500000,
+        valor_total: iDeal.weighted_value,
         data: [pedido],
       });
 
