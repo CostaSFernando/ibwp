@@ -77,6 +77,10 @@ export class PedidoService {
     return Promise.allSettled(responses);
   }
 
+  async getAllPedidos() {
+    return await this.pedidoModel.find();
+  }
+
   private createXml(object: any) {
     return convert.js2xml(object, {
       compact: true,

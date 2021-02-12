@@ -1,4 +1,4 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { DealService } from 'src/services/deal/deal.service';
 import { PedidoService } from 'src/services/pedido/pedido.service';
 
@@ -25,5 +25,10 @@ export class PedidoController {
     return retorno;
 
     // Salvar no mongoDB
+  }
+
+  @Get()
+  async getPedidos() {
+    return await this.pedidoService.getAllPedidos();
   }
 }
