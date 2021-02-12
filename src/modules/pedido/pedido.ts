@@ -39,8 +39,8 @@ class Parcela {
 
 @Schema()
 class Parcelas {
-  @Prop({ type: SchemaMongo.Types.ObjectId, ref: 'Parcela' })
-  parcela: Parcela;
+  @Prop({ type: Parcela })
+  parcela: Parcela[];
 }
 
 @Schema()
@@ -58,8 +58,19 @@ export class PedidoBase {
 }
 
 @Schema()
-export class Pedido {
+export class Agregation {
   @Prop({ type: PedidoBase })
   pedido: PedidoBase;
+}
+@Schema()
+export class Pedido {
+  @Prop()
+  data_ganho: string;
+
+  @Prop()
+  valor_total: number;
+
+  @Prop({ type: Agregation })
+  data: Agregation[];
 }
 export const PedidoSchema = SchemaFactory.createForClass(Pedido);

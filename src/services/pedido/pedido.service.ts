@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as convert from 'xml-js';
 import axios from 'axios';
 import * as qs from 'qs';
+import { Pedido, Agregation } from '../../modules/pedido/pedido';
 import {
   Pedido as PedidoSchema,
   PedidoDocument,
@@ -20,7 +21,7 @@ export class PedidoService {
   ) {}
   async createPedidoWithDeal(deal: IDeals): Promise<any> {
     const responses = deal.data.map(async (iDeal) => {
-      const pedido: IpostPedido = {
+      const pedido: Agregation = {
         pedido: {
           cliente: {
             nome: iDeal.person_name,
@@ -48,6 +49,7 @@ export class PedidoService {
           },
         },
       };
+
       let xml = this.createXml(pedido);
 
       xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
@@ -56,19 +58,42 @@ export class PedidoService {
         xml,
       });
 
-      const { data } = await axios.request({
-        method: 'post',
-        url: 'https://bling.com.br/Api/v2/pedido/json/',
-        data: payload,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+      //   const { data } = await axios.request({
+      //     method: 'post',
+      //     url: 'https://bling.com.br/Api/v2/pedido/json/',
+      //     data: payload,
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //     },
+      //   });
+      //   if (data.retorno.erros) {
+      //     throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
+      //   }
+      const dataWon = iDeal.won_time.split(' ')[0];
+
+      const searchPedido = await this.pedidoModel.findOne({
+        data_ganho: dataWon,
       });
-      if (data.retorno.erros) {
-        throw new Error(`O Pedido do ${iDeal.person_name} não foi cadastrado.`);
+
+      if (searchPedido) {
+        console.log(searchPedido);
+
+        searchPedido.data.push(pedido);
+        return await this.pedidoModel.updateOne(
+          { _id: searchPedido._id },
+          {
+            $set: {
+              data: searchPedido.data,
+              valor_total: searchPedido.valor_total + iDeal.weighted_value,
+            },
+          },
+        );
       }
-      const newPedido = new this.pedidoModel(pedido);
-      console.log(newPedido);
+      const newPedido = new this.pedidoModel({
+        data_ganho: dataWon,
+        valor_total: 500000,
+        data: [pedido],
+      });
 
       return await newPedido.save();
     });
